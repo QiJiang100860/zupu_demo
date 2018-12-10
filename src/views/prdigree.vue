@@ -47,7 +47,7 @@ export default {
               appellation: "父亲",
               headerUrl: "../../static/images/fuqin.png",
               seniorityColor: "#4077db",
-              isDeath:0,
+              isDeath:1,
               id: 2
             },
             {
