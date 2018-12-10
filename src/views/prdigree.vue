@@ -1,11 +1,9 @@
 <template>
   <div class="prdigree">
-
     <!-- <div class="btn-wrapper">
       <div class="h5-btn" @click="handleContect">联系人</div>
       <div class="h5-btn" @click="handleJNTFun">纪念堂</div>
-    </div> -->
-    
+    </div>-->
     <tree ref="treeComponent" :treeData="treeData"></tree>
 
     <drap-node :data="drapNodeData" @emitDrap="drapFun"></drap-node>
@@ -37,47 +35,60 @@ export default {
         this.treeData = {
           nodes: [
             {
-              name: "我",
-              itemStyle: {
-                color: "#ff0000"
-              }
+              name: "张三丰",
+              appellation: "自己",
+              headerUrl: "../../static/images/ziji.png",
+              seniorityColor: "#28aedc",
+              isDeath:0,
+              id: 1
             },
             {
-              name: "父亲",
-              itemStyle: {
-                color: "#666"
-              }
+              name: "2",
+              appellation: "父亲",
+              headerUrl: "../../static/images/fuqin.png",
+              seniorityColor: "#4077db",
+              isDeath:0,
+              id: 2
             },
             {
-              name: "母亲",
-              itemStyle: {
-                color: "#666"
-              }
+              name: "3",
+              appellation: "母亲",
+              headerUrl: "../../static/images/muqin.png",
+              seniorityColor: "#4077db",
+              isDeath:0,
+              id: 3
             },
             {
-              name: "姨妈",
-              itemStyle: {
-                color: "#666"
-              }
+              name: "4",
+              appellation: "姨妈",
+              headerUrl: "../../static/images/muqin.png",
+              seniorityColor: "#4077db",
+              isDeath:0,
+              id: 4
             },
             {
-              name: "儿子",
-              itemStyle: {
-                color: "#00ff00",
-                opacity: "1"
-              }
+              name: "5",
+              appellation: "儿子",
+              headerUrl: "../../static/images/erzi.png",
+              seniorityColor: "#43b853",
+              isDeath:0,
+              id: 5
             },
             {
-              name: "爷爷",
-              itemStyle: {
-                color: "#000"
-              }
+              name: "6",
+              appellation: "爷爷",
+              headerUrl: "../../static/images/yeye.png",
+              seniorityColor: "#d03535",
+              isDeath:1,
+              id: 6
             },
             {
-              name: "表弟",
-              itemStyle: {
-                color: "#ff0000"
-              }
+              name: "7",
+              appellation: "表弟",
+              headerUrl: "../../static/images/erzi.png",
+              seniorityColor: "#28aedc",
+              isDeath:0,
+              id: 7
             }
           ],
           links: [

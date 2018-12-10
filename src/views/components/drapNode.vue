@@ -6,7 +6,7 @@
       </h5>
     </li>
 
-    <li class="drap-item" v-else v-drap>
+    <li class="drap-item" v-else @click="drapFun">
       <h5>
         <span>空</span>
       </h5>
