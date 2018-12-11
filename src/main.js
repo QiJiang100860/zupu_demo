@@ -4,11 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Echarts from 'echarts'
-
-Vue.prototype.$echarts = Echarts
-Vue.use(Echarts)
-
-Vue.config.productionTip = false
+import Vant from 'vant';
+import 'vant/lib/index.css';
+Vue.use(Vant);
+Vue.use(Echarts);
+Vue.prototype.$echarts = Echarts;
+Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({

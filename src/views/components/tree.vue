@@ -7,8 +7,10 @@
 <script>
 import * as Util from "../../utils";
 import { debug } from "util";
+
 export default {
   props: ["treeData"],
+  components: {},
   data() {
     return {
       chartsObj: null
@@ -16,33 +18,11 @@ export default {
   },
 
   mounted() {
-    
-    this.draw(this.treeData, () => {
-      this.chartsObj.on("click", nodes => {
-        const id = nodes.data._ID;
-        alert(id);
-      });
-
-      // this.chartsObj.on('mouseDown',nodes=>{
-      //   const id = nodes.data._ID;
-      //   console.log('按下')
-      // })
-
-      // this.chartsObj.on('mouseMove',nodes=>{
-      //   const id = nodes.data._ID;
-      //   console.log('拖动')
-      // })
-
-      // this.chartsObj.on('mouseUp',nodes=>{
-      //   const id = nodes.data._ID;
-      //   console.log('拖动结束')
-      // })
-    });
+    this.draw(this.treeData, () => {});
   },
 
   methods: {
     draw(data, cb) {
-
       // 根据接口数据组装 echarts的数据
       const resizeParam = d => {
         let data = d.nodes;
@@ -54,20 +34,11 @@ export default {
             this.canvasDrawIcon(itemData, url => {
               let item = {
                 _ID: itemData.id,
+                _IsDeath: itemData.isDeath,
+                _Image:url,
                 name: itemData.name,
-                symbol: "image://" + url,
+                symbol: "circle",
                 symbolKeepAspect: true,
-
-                itemStyle: {
-                  // shadowColor: itemData.seniorityColor,
-                  // shadowBlur: 20,
-                  // shadowOffsetX: "0",
-                  // shadowOffsetY: "0"
-                  // borderType: "solid",
-                  // borderColor:itemData.seniorityColor,
-                  // borderWidth: 4
-                },
-
                 label: {
                   show: true,
                   position: "bottom",
@@ -95,6 +66,7 @@ export default {
                       padding: [0, 0, 0, 0]
                       // width:"100%",
                     }
+
                     // c:{
                     //   color:itemData.seniorityColor,
                     //   width:30,
@@ -113,25 +85,36 @@ export default {
             });
           } else {
             // const nodeData = data.nodes;
-            const nodeData = arr;
+            const nodeData = arr.map((item, idx) => {
+              item.x = Math.random() * 500;
+              item.y = Math.random() * 500;
+              return item;
+            });
             const linkData = d.links;
             this.initEcharts(() => {
               this.renderEcharts({
-                animationDurationUpdate: 1500,
-                animationEasingUpdate: "quinticInOut",
+                // animationDurationUpdate: 1500,
+                // animationEasingUpdate: "quinticInOut",
                 lineStyle: {
                   type: "dashed",
                   color: "#bbb"
                 },
+                itemStyle: {
+                  // borderType: "solid",
+                  color:"#fff",
+                  // borderWidth: 2,
+                  // borderColor:"#dedede"
+                },
                 series: [
                   {
                     type: "graph",
-                    layout: "force",
+                    layout: "none",
                     symbolSize: 66,
-                    roam: true,
-                    draggable: true,
+                    // roam: true,
+                    // draggable: true,
+
                     force: {
-                      repulsion: 900
+                      // repulsion: 1000
                     },
                     data: nodeData,
                     // links: [],
@@ -170,7 +153,86 @@ export default {
       cb ? cb() : "";
     },
     renderEcharts(data) {
-      this.chartsObj.setOption(data);
+      const that = this;
+      that.chartsObj.setOption(data);
+      let nodes = data.series[0].data;
+      that.chartsObj.setOption({
+        graphic: that.$echarts.util.map(nodes, (dataItem, dataIndex) => {
+          return {
+            // type: "circle",
+            // shape: {
+            //   r: 33
+            // },
+            // style: {
+            //   fill: "#fff",
+            //   stroke: "#dedede"
+            // },
+
+
+            type: "image",
+            style: {
+              image: dataItem._Image,
+              width:66,
+              height:66,
+              x:-33,
+              y:-33
+            },
+
+
+
+            position: that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
+              dataItem.x,
+              dataItem.y
+            ]),
+
+            // invisible: true,
+            draggable: true,
+            z: 100,
+
+            // 点击节点
+            onclick: that.$echarts.util.curry(function(idx) {
+              const emitParam = data.series[0].data[idx];
+              that.$emit("emitHandleSheet", emitParam);
+            }, dataIndex),
+
+            // 拖拽节点
+            ondrag: that.$echarts.util.curry(function(dataIndex) {
+              let tmpPos = that.chartsObj.convertFromPixel(
+                { seriesIndex: 0 },
+                this.position
+              );
+              nodes[dataIndex].x = tmpPos[0];
+              nodes[dataIndex].y = tmpPos[1];
+
+              // 重新渲染各个节点的值
+              that.chartsObj.setOption({
+                series: [
+                  {
+                    data: nodes
+                  }
+                ]
+              });
+
+              // 当节点位置改变时，就要更新拖拽节点的位置
+              that.chartsObj.setOption({
+                graphic: that.$echarts.util.map(nodes, function(
+                  item,
+                  dataIndex
+                ) {
+                  var tmpPos = that.chartsObj.convertToPixel(
+                    { seriesIndex: 0 },
+                    [item.x, item.y]
+                  );
+                  return {
+                    position: tmpPos
+                  };
+                })
+              });
+            }, dataIndex)
+          };
+        })
+      });
+
       this.chartsObj.hideLoading();
     },
 
@@ -178,32 +240,45 @@ export default {
 
     canvasDrawIcon(data, cb) {
       let imgCanvas = document.createElement("canvas");
-      imgCanvas.width = 70;
-      imgCanvas.height = 70;
+      imgCanvas.width = 700;
+      imgCanvas.height = 700;
       let ctx = imgCanvas.getContext("2d");
 
+      // 头像
       let imgEle = document.createElement("img");
+      imgEle.setAttribute("crossOrigin",'Anonymous')
       imgEle.src = data.headerUrl;
+
+      // 纪念堂图标
+      let jntIcon = document.createElement("img");
+      jntIcon.width = 100;
+      jntIcon.height = 100;
+
+      let iconSrc = require("../../../static/images/jnt_icon.png");
+      jntIcon.setAttribute("crossOrigin",'Anonymous')
+      jntIcon.src = iconSrc
+
       imgEle.onload = () => {
-        ctx.drawImage(imgEle, 2, 2, 66, 66);
+        ctx.drawImage(imgEle, 20, 20, 660, 660);
         ctx.beginPath();
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 20;
         ctx.strokeStyle = data.seniorityColor;
-        ctx.arc(35, 35, 33, 0, 2 * Math.PI);
+        ctx.arc(350, 350, 330, 0, 2 * Math.PI);
         ctx.stroke();
-        ctx.closePath()
+        ctx.closePath();
         if (data.isDeath) {
           // imgCanvas.style.position = "fixed";
           // imgCanvas.style.top = "10px";
           // imgCanvas.style.left = "10px";
           // document.body.appendChild(imgCanvas);
-          console.log(data.name + "死掉了，要画纪念堂");
+          // console.log(data.name + "死掉了，要画纪念堂");
           ctx.beginPath();
-          ctx.arc(56,56,10,0, 2 * Math.PI)
-          ctx.fillStyle=data.seniorityColor
-          ctx.fill()
+          ctx.arc(560, 560, 100, 0, 2 * Math.PI);
+          ctx.fillStyle = data.seniorityColor;
+          ctx.fill();
           ctx.stroke();
-          ctx.closePath()
+          ctx.closePath();
+          ctx.drawImage(jntIcon, 472, 460, 180, 180);
           const drawImgUrl = imgCanvas.toDataURL();
           ctx.clearRect(0, 0, imgCanvas.width, imgCanvas.height);
           cb(drawImgUrl);
