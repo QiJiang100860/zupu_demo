@@ -21,11 +21,13 @@
 <script>
 import Tree from "./components/tree";
 import DrapNode from "./components/drapNode";
-
 import { Toast } from "vant";
 import { Actionsheet } from "vant";
-
 import { Dialog } from "vant";
+import {calcRelation} from "./calcRelation.js"
+
+import relationData from "./data.js"
+
 
 export default {
   components: {
@@ -38,116 +40,28 @@ export default {
       telType: new Number(),
 
       treeData: null,
-
       drapNodeData: [],
-
+      
       show: false,
       actions: null
     };
   },
   beforeMount() {
-    this.isEvelPhoneType(() => {
       this.getPrdigree(() => {
-        this.drapNodeData = [1, 3, 4, 3];
+        
+        const data = calcRelation(relationData.data)
+
+        this.drapNodeData = [];
         this.treeData = {
-          nodes: [
-            {
-              name: "张三丰",
-              appellation: "自己",
-              headerUrl: require("../../static/images/ziji.png"),
-              seniorityColor: "#28aedc",
-              isDeath: 0,
-              id: 1
-            },
-            {
-              name: "2",
-              appellation: "父亲",
-              headerUrl:  require("../../static/images/fuqin.png"),
-              seniorityColor: "#4077db",
-              isDeath: 0,
-              id: 2
-            },
-            {
-              name: "3",
-              appellation: "母亲",
-              headerUrl: require("../../static/images/muqin.png"),
-              seniorityColor: "#4077db",
-              isDeath: 1,
-              id: 3
-            },
-            {
-              name: "4",
-              appellation: "姨妈",
-              headerUrl: require("../../static/images/muqin.png"),
-              seniorityColor: "#4077db",
-              isDeath: 0,
-              id: 4
-            },
-            {
-              name: "5",
-              appellation: "儿子",
-              headerUrl: require("../../static/images/erzi.png"),
-              seniorityColor: "#43b853",
-              isDeath: 0,
-              id: 5
-            },
-            {
-              name: "6",
-              appellation: "爷爷",
-              headerUrl: require("../../static/images/yeye.png"),
-              seniorityColor: "#d03535",
-              isDeath: 0,
-              id: 6
-            },
-            {
-              name: "7",
-              appellation: "表弟",
-              headerUrl: require("../../static/images/erzi.png"),
-              seniorityColor: "#28aedc",
-              isDeath: 0,
-              id: 7
-            }
-          ],
-          links: [
-            {
-              source: 0,
-              target: 1
-            },
-            {
-              source: 0,
-              target: 2
-            },
-            {
-              source: 0,
-              target: 4
-            },
-            {
-              source: 2,
-              target: 3
-            },
-            {
-              source: 1,
-              target: 5
-            },
-            {
-              source: 3,
-              target: 6
-            }
-          ]
+          nodes: data.nodes,
+          links:data.links
         };
+
       });
-    });
   },
 
   mounted() {
-    // const evt = "onorientationchange" in window ? "orientationchange" : "resize";
-    // window.addEventListener(evt, ()=>{
-    //   if (window.orientation == 0 || window.orientation == 180) {
-    //     alert("竖屏");
-    //   } else {
-    //     alert("横屏");
-    //   }
-    // }, false);
+    
   },
 
   methods: {
@@ -252,21 +166,7 @@ export default {
     //   }
     // },
 
-    // 判断手机类型
-    isEvelPhoneType(cb) {
-      const u = navigator.userAgent,
-        app = navigator.appVersion;
-      const isAndroid = u.indexOf("Android") > -1 || u.indexOf("Linux") > -1; //g
-      const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
-      if (isAndroid) {
-        this.telType = 1;
-        cb ? cb() : "";
-      }
-      if (isIOS) {
-        this.telType = 2;
-        cb ? cb() : "";
-      }
-    },
+
 
     // 获取纪念堂的列表的数据
     getPrdigree(cb) {

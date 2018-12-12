@@ -86,8 +86,8 @@ export default {
           } else {
             // const nodeData = data.nodes;
             const nodeData = arr.map((item, idx) => {
-              item.x = Math.random() * 500;
-              item.y = Math.random() * 500;
+              item.x = Math.random()*500
+              item.y = Math.random()*500
               return item;
             });
             const linkData = d.links;
@@ -112,7 +112,6 @@ export default {
                     symbolSize: 66,
                     // roam: true,
                     // draggable: true,
-
                     force: {
                       // repulsion: 1000
                     },
@@ -167,8 +166,6 @@ export default {
             //   fill: "#fff",
             //   stroke: "#dedede"
             // },
-
-
             type: "image",
             style: {
               image: dataItem._Image,
@@ -177,9 +174,6 @@ export default {
               x:-33,
               y:-33
             },
-
-
-
             position: that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
               dataItem.x,
               dataItem.y
@@ -213,7 +207,7 @@ export default {
                 ]
               });
 
-              // 当节点位置改变时，就要更新拖拽节点的位置
+              // // 当节点位置改变时，就要更新拖拽节点的位置
               that.chartsObj.setOption({
                 graphic: that.$echarts.util.map(nodes, function(
                   item,
@@ -266,7 +260,7 @@ export default {
         ctx.arc(350, 350, 330, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
-        if (data.isDeath) {
+        if (data.isDeath==2) {
           // imgCanvas.style.position = "fixed";
           // imgCanvas.style.top = "10px";
           // imgCanvas.style.left = "10px";
