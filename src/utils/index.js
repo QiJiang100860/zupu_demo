@@ -32,17 +32,3 @@ export function androidOrIos() {
         return 2
     }
 }
-
-
-/**
- * 
- * 根据长度 和 角度计算长度
- * 
-*/
-
-export function _DEV_(t,d,r) {
-    // t 轴线的表示
-    // d 节点的间距
-    // r 角度
-    return d*Math[t == 'x'?'cos':'sin'](2*Math.PI/360*r)
-}

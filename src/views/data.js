@@ -7,7 +7,7 @@
  * 
  * @param nodeType @type number
  * @description 与数据项根节点的关系
- * @var  f:父,m:母,h:夫,w:妻,s:子,d:女,xb:兄弟,ob:兄,lb:弟,xs:姐妹,os:姐,ls:妹
+ * @var  f:父,m:母,h:夫,w:妻,s:子,d:女
  * 
  * 
  * @param hierarchy @type string
@@ -54,6 +54,17 @@
  * 
  * 
  * 
+ * 
+ * 移动端需要
+ * 
+ * memorialHall:checkNodeInfro
+ * memorialHall:sendMessage
+ * memorialHall:commonFriend
+ * 
+ * 
+ * window.location.href = "memorialHall://sendMessage?a=1&b=2";
+ * 
+ * 
  * */
 
 
@@ -63,74 +74,150 @@ module.exports = {
             id: '1515236156156#root',
             name: "张三",
             appellation: "我",
-            status:1,
+            status: 1,
             headerUrl: require("../../static/images/ziji.png"),
             hierarchy: '0',
             type: 1,
             linkNodes: [
                 {
-                    id: 2,
+                    id: '2',
                     name: "张来德",
                     appellation: "父亲",
-                    status:1,
+                    status: 1,
                     nodeType: 'f',
                     headerUrl: require("../../static/images/fuqin.png"),
                     hierarchy: '+1',
                     type: 1,
                 },
                 {
-                    id: 3,
+                    id: '3',
                     name: "李春兰",
                     appellation: "母亲",
-                    status:1,
+                    status: 1,
                     nodeType: 'm',
                     headerUrl: require("../../static/images/muqin.png"),
                     hierarchy: '+1',
+                    type: 2,
+                },
+                {
+                    id: '4',
+                    name: "张毅然",
+                    appellation: "儿子",
+                    status: 1,
+                    nodeType: 's',
+                    headerUrl: require("../../static/images/erzi.png"),
+                    hierarchy: '-1',
+                    type: 1,
+                },
+                {
+                    id: '5',
+                    name: "张语嫣",
+                    appellation: "女儿",
+                    status: 1,
+                    nodeType: 'd',
+                    headerUrl: require("../../static/images/nver.png"),
+                    hierarchy: '-1',
+                    type: 1,
+                },
+
+                {
+                    id: '6',
+                    name: "妻子",
+                    appellation: "妻子",
+                    status: 1,
+                    nodeType: 'w',
+                    headerUrl: require("../../static/images/nver.png"),
+                    hierarchy: '0',
                     type: 1,
                 }
             ]
         },
-        {
 
-            id: '3',
-            name: "李春兰",
-            appellation: "母亲",
-            status:1,
-            headerUrl: require("../../static/images/ziji.png"),
-            hierarchy: '+1',
+        {
+            id: '6',
+            name: "妻子",
+            appellation: "妻子",
+            status: 1,
+            headerUrl: require("../../static/images/nver.png"),
+            hierarchy: '0',
             type: 1,
-            linealKins: [
+            linkNodes:[
                 {
-                    id: 2,
-                    name: "李来德",
-                    appellation: "外公",
-                    status:1,
+                    id:'61',
+                    name:'妻子的爸爸',
+                    appellation:'岳父',
+                    status: 1,
                     nodeType: 'f',
                     headerUrl: require("../../static/images/fuqin.png"),
-                    hierarchy: '+2',
-                    type: 1,
+                    hierarchy: '+1',
+                    type: 2,
                 },
                 {
-                    id: 4,
-                    name: "李春旺",
-                    appellation: "舅舅",
-                    status:1,
-                    nodeType: 'ob',
+                    id:'62',
+                    name:'妻子的妈妈',
+                    appellation:'岳母',
+                    status: 1,
+                    nodeType: 'm',
                     headerUrl: require("../../static/images/muqin.png"),
                     hierarchy: '+1',
                     type: 1,
                 },
                 {
-                    id: '1515236156156',
+                    id: '1515236156156#root',
                     name: "张三",
                     appellation: "我",
-                    status:1,
-                    nodeType: 'd',
-                    headerUrl: require("../../static/images/muqin.png"),
-                    hierarchy: '+1',
+                    status: 1,
+                    nodeType: 'h',
+                    headerUrl: require("../../static/images/ziji.png"),
+                    hierarchy: '0',
+                    type: 1,
+                },
+
+                {
+                    id: '63',
+                    name: "张小鱼",
+                    appellation: "儿子",
+                    status: 1,
+                    nodeType: 's',
+                    headerUrl: require("../../static/images/erzi.png"),
+                    hierarchy: '-1',
                     type: 1,
                 }
             ]
-        }
+        },
+
+
+        {
+            id: '5',
+            name: "张语嫣",
+            appellation: "女儿",
+            status: 1,
+            headerUrl: require("../../static/images/nver.png"),
+            hierarchy: '-1',
+            type: 1,
+            linkNodes:[
+                {
+                    id: '51',
+                    name: "欧阳娜娜",
+                    appellation: "孙女",
+                    status: 1,
+                    headerUrl: require("../../static/images/nver.png"),
+                    nodeType: 'd',
+                    hierarchy: '-2',
+                    type: 1,
+                },
+                {
+                    id: '52',
+                    name: "欧阳大叔",
+                    appellation: "女婿",
+                    status: 1,
+                    headerUrl: require("../../static/images/erzi.png"),
+                    nodeType: 'h',
+                    hierarchy: '-1',
+                    type: 1,
+                }
+            ]
+        },
+
     ]
 }

@@ -14,6 +14,18 @@
       @select="onSelect"
       :close-on-click-overlay="false"
     />
+
+    <van-dialog v-model="showDialog" show-cancel-button :before-close="beforeClose">
+    <!-- <van-dialog v-model="showDialog" show-cancel-button> -->
+      <h1 class="dialog-title">温馨提示</h1>
+      <div class="dialog-content">
+        <div>正在转换为纪念堂，该过程不可逆，确认操作吗？若继续，请选择转换方式</div>
+        <van-radio-group v-model="changeType">
+          <van-radio name="1">发送验证码，去验证</van-radio>
+          <van-radio name="2">共同好友验证</van-radio>
+        </van-radio-group>
+      </div>
+    </van-dialog>
   </div>
 </template>
 
@@ -24,16 +36,17 @@ import DrapNode from "./components/drapNode";
 import { Toast } from "vant";
 import { Actionsheet } from "vant";
 import { Dialog } from "vant";
-import {calcRelation} from "./calcRelation.js"
 
-import relationData from "./data.js"
+import { calcRelation } from "./calcRelation.js";
 
+import relationData from "./data.js";
 
 export default {
   components: {
     Tree,
     DrapNode,
-    Actionsheet
+    Actionsheet,
+    Dialog
   },
   data() {
     return {
@@ -41,32 +54,31 @@ export default {
 
       treeData: null,
       drapNodeData: [],
-      
+
       show: false,
-      actions: null
+      actions: null,
+
+      showDialog: false,
+      changeType: "1"
     };
   },
   beforeMount() {
-      this.getPrdigree(() => {
-        
-        const data = calcRelation(relationData.data)
+    this.getPrdigree(() => {
+      const data = calcRelation(relationData.data);
 
-        this.drapNodeData = [];
-        this.treeData = {
-          nodes: data.nodes,
-          links:data.links
-        };
-
-      });
+      this.drapNodeData = [];
+      this.treeData = {
+        nodes: data.nodes,
+        links: data.links
+      };
+    });
   },
 
-  mounted() {
-    
-  },
+  mounted() {},
 
   methods: {
     handleSheet(data) {
-      if (data._ID === 1) {
+      if (data._ID.indexOf("#root") > 0) {
         this.actions = [
           {
             name: "查看节点信息",
@@ -75,7 +87,7 @@ export default {
           }
         ];
       } else {
-        if (data._IsDeath == 1) {
+        if (data._IsDeath == 2) {
           this.actions = [
             {
               name: "删除节点信息",
@@ -135,19 +147,19 @@ export default {
     check() {
       Toast("查看节点信息");
     },
+
     change() {
-      Dialog.confirm({
-        title: "温馨提示",
-        message: "正在转变为纪念堂吗，该操作不可逆，确定继续吗？"
-      })
-        .then(() => {
-          // on confirm
-          Toast("操作成功");
-        })
-        .catch(() => {
-          // on cancel
-          Toast("操作取消了");
-        });
+      this.showDialog = true;
+    },
+
+    // 关闭弹框
+    beforeClose(action, done) {
+      if (action === 'confirm') {
+        let handleName = this.changeType==1?'sendMessage':'commonFriend';
+        window.location.href = `memorialHall://?handleName=${handleName}&nodeId=testID`
+      } else {
+        done();
+      }
     },
 
     // handleContect() {
@@ -165,8 +177,6 @@ export default {
     //     alert("ios：去纪念堂方法");
     //   }
     // },
-
-
 
     // 获取纪念堂的列表的数据
     getPrdigree(cb) {
@@ -201,5 +211,19 @@ export default {
       border-radius: 6px;
     }
   }
+}
+
+.dialog-title {
+  font-size: 16px;
+  font-weight: 500;
+  padding-top: 25px;
+  text-align: center;
+}
+
+.dialog-content {
+  padding: 25px;
+  padding-top: 10px;
+  font-size: 14px;
+  color: #7d7e80;
 }
 </style>

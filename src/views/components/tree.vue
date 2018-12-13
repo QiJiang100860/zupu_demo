@@ -36,9 +36,11 @@ export default {
                 _ID: itemData.id,
                 _IsDeath: itemData.isDeath,
                 _Image:url,
+                x:itemData.x,
+                y:itemData.y,
                 name: itemData.name,
                 symbol: "circle",
-                symbolKeepAspect: true,
+                
                 label: {
                   show: true,
                   position: "bottom",
@@ -86,8 +88,8 @@ export default {
           } else {
             // const nodeData = data.nodes;
             const nodeData = arr.map((item, idx) => {
-              item.x = Math.random()*500
-              item.y = Math.random()*500
+              item.x = item.x || Math.random()*500
+              item.y = item.y || Math.random()*500
               return item;
             });
             const linkData = d.links;
