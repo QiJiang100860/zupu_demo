@@ -33,37 +33,43 @@ module.exports = {
             x: '-',
             y: '+',
             cy: '-',
-            rotate: [210, 270]
+            // rotate: [210, 270]
+            rotate: [240, 240]
         },
         m: {
             x: '+',
             y: '+',
             cy: '-',
-            rotate: [270, 330]
+            // rotate: [270, 330],
+            rotate: [300, 300]
         },
         h: {
             x: '-',
             y: 0,
             cy: 0,
-            rotate: [150, 210]
+            // rotate: [150, 210]
+            rotate: [180, 180]
         },
         w: {
             x: '+',
             y: 0,
             cy: 0,
-            rotate: [-30, 30]
+            // rotate: [-30, 30]
+            rotate: [0, 0]
         },
         s: {
             x: "-",
             y: '-',
             cy: '+',
-            rotate: [90, 150]
+            // rotate: [90, 150]
+            rotate: [120, 120]
         },
         d: {
             x: "+",
             y: '-',
             cy: '+',
-            rotate: [30, 90]
+            // rotate: [30, 90]
+            rotate: [60, 60]
         }
 
     },

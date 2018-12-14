@@ -14,18 +14,6 @@
       @select="onSelect"
       :close-on-click-overlay="false"
     />
-
-    <van-dialog v-model="showDialog" show-cancel-button :before-close="beforeClose">
-    <!-- <van-dialog v-model="showDialog" show-cancel-button> -->
-      <h1 class="dialog-title">温馨提示</h1>
-      <div class="dialog-content">
-        <div>正在转换为纪念堂，该过程不可逆，确认操作吗？若继续，请选择转换方式</div>
-        <van-radio-group v-model="changeType">
-          <van-radio name="1">发送验证码，去验证</van-radio>
-          <van-radio name="2">共同好友验证</van-radio>
-        </van-radio-group>
-      </div>
-    </van-dialog>
   </div>
 </template>
 
@@ -38,7 +26,6 @@ import { Actionsheet } from "vant";
 import { Dialog } from "vant";
 
 import { calcRelation } from "./calcRelation.js";
-
 import relationData from "./data.js";
 
 export default {
@@ -56,21 +43,25 @@ export default {
       drapNodeData: [],
 
       show: false,
-      actions: null,
-
-      showDialog: false,
-      changeType: "1"
+      actions: null
     };
   },
   beforeMount() {
+    Toast.loading({
+      forbidClick: true, 
+      message: '加载中...',
+      loadingType:"spinner",
+      duration:0
+    });
     this.getPrdigree(() => {
       const data = calcRelation(relationData.data);
-
       this.drapNodeData = [];
       this.treeData = {
         nodes: data.nodes,
         links: data.links
       };
+
+      
     });
   },
 
@@ -138,30 +129,35 @@ export default {
         .then(() => {
           // on confirm
           Toast("删除成功了");
+          // window.location.reload()                                           
         })
         .catch(() => {
           // on cancel
           Toast("操作取消了");
         });
     },
-    check() {
-      Toast("查看节点信息");
+    check(item) {
+      Toast("查看节点信息"+JSON.stringify(item));
+      window.location.href = `memorialHall://?handleName=checkNodeInfro&nodeId=${item.id}`;
     },
 
-    change() {
-      this.showDialog = true;
+    change(item) {
+      Dialog.confirm({
+        title: "请选择联系人转化纪念堂方式",
+        message: "方式1：逝者短信验证死亡后，手动创建纪念堂；<div></div>方式2：逝者两位共同好友确认其死亡，并创建纪念堂。",
+        confirmButtonText:'共同好友确认死亡',
+        cancelButtonText:'逝者短信验证死亡',
+        overlay:true
+      })
+        .then(() => {
+          // Toast("共同好友确认死亡");
+          window.location.href = `memorialHall://?handleName=commonFriend&nodeId=${item.id}`;
+        })
+        .catch(() => {
+          // Toast("逝者短信验证死亡");
+          window.location.href = `memorialHall://?handleName=sendMessage&nodeId=${item.id}`;
+        });
     },
-
-    // 关闭弹框
-    beforeClose(action, done) {
-      if (action === 'confirm') {
-        let handleName = this.changeType==1?'sendMessage':'commonFriend';
-        window.location.href = `memorialHall://?handleName=${handleName}&nodeId=testID`
-      } else {
-        done();
-      }
-    },
-
     // handleContect() {
     //   if (this.telType == 1) {
     //     alert("安卓：去联系人方法");
@@ -211,19 +207,5 @@ export default {
       border-radius: 6px;
     }
   }
-}
-
-.dialog-title {
-  font-size: 16px;
-  font-weight: 500;
-  padding-top: 25px;
-  text-align: center;
-}
-
-.dialog-content {
-  padding: 25px;
-  padding-top: 10px;
-  font-size: 14px;
-  color: #7d7e80;
 }
 </style>

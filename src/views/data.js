@@ -219,5 +219,39 @@ module.exports = {
             ]
         },
 
+        {
+
+
+            id: '2',
+            name: "张来德",
+            appellation: "父亲",
+            status: 1,
+            headerUrl: require("../../static/images/fuqin.png"),
+            hierarchy: '+1',
+            type: 1,
+            linkNodes:[
+                {
+                    id: '21',
+                    name: "张宝顺",
+                    appellation: "爷爷",
+                    status: 1,
+                    headerUrl: require("../../static/images/yeye.png"),
+                    nodeType: 'f',
+                    hierarchy: '+2',
+                    type: 2,
+                },
+                {
+                    id: '22',
+                    name: "张来喜",
+                    appellation: "哥哥",
+                    status: 1,
+                    headerUrl: require("../../static/images/ziji.png"),
+                    nodeType: 's',
+                    hierarchy: '0',
+                    type: 1,
+                }
+            ]
+        },
+
     ]
 }

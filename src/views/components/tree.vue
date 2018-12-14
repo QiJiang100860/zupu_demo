@@ -7,13 +7,15 @@
 <script>
 import * as Util from "../../utils";
 import { debug } from "util";
-
+import { Toast } from "vant";
 export default {
   props: ["treeData"],
   components: {},
   data() {
     return {
-      chartsObj: null
+      chartsObj: null,
+
+      nodeSize:66
     };
   },
 
@@ -35,12 +37,13 @@ export default {
               let item = {
                 _ID: itemData.id,
                 _IsDeath: itemData.isDeath,
-                _Image:url,
-                x:itemData.x,
-                y:itemData.y,
+                _Image: url,
+                x: itemData.x,
+                y: itemData.y,
                 name: itemData.name,
                 symbol: "circle",
-                
+                // symbol: "image://" + url,
+
                 label: {
                   show: true,
                   position: "bottom",
@@ -88,8 +91,8 @@ export default {
           } else {
             // const nodeData = data.nodes;
             const nodeData = arr.map((item, idx) => {
-              item.x = item.x || Math.random()*500
-              item.y = item.y || Math.random()*500
+              item.x = item.x || Math.random() * 500;
+              item.y = item.y || Math.random() * 500;
               return item;
             });
             const linkData = d.links;
@@ -103,7 +106,7 @@ export default {
                 },
                 itemStyle: {
                   // borderType: "solid",
-                  color:"#fff",
+                  color: "#fff"
                   // borderWidth: 2,
                   // borderColor:"#dedede"
                 },
@@ -112,7 +115,7 @@ export default {
                     type: "graph",
                     layout: "none",
                     symbolSize: 66,
-                    // roam: true,
+                    roam: true,
                     // draggable: true,
                     force: {
                       // repulsion: 1000
@@ -150,7 +153,6 @@ export default {
       dom.style.width = infro.width + "px";
       dom.style.height = infro.height + "px";
       this.chartsObj = this.$echarts.init(dom);
-      this.chartsObj.showLoading();
       cb ? cb() : "";
     },
     renderEcharts(data) {
@@ -171,10 +173,10 @@ export default {
             type: "image",
             style: {
               image: dataItem._Image,
-              width:66,
-              height:66,
-              x:-33,
-              y:-33
+              width: that.nodeSize,
+              height: that.nodeSize,
+              x: -that.nodeSize/2,
+              y: -that.nodeSize/2
             },
             position: that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
               dataItem.x,
@@ -192,44 +194,70 @@ export default {
             }, dataIndex),
 
             // 拖拽节点
-            ondrag: that.$echarts.util.curry(function(dataIndex) {
-              let tmpPos = that.chartsObj.convertFromPixel(
-                { seriesIndex: 0 },
-                this.position
-              );
-              nodes[dataIndex].x = tmpPos[0];
-              nodes[dataIndex].y = tmpPos[1];
-
-              // 重新渲染各个节点的值
-              that.chartsObj.setOption({
-                series: [
-                  {
-                    data: nodes
-                  }
-                ]
-              });
-
-              // // 当节点位置改变时，就要更新拖拽节点的位置
-              that.chartsObj.setOption({
-                graphic: that.$echarts.util.map(nodes, function(
-                  item,
-                  dataIndex
-                ) {
-                  var tmpPos = that.chartsObj.convertToPixel(
-                    { seriesIndex: 0 },
-                    [item.x, item.y]
-                  );
-                  return {
-                    position: tmpPos
-                  };
-                })
-              });
-            }, dataIndex)
+            ondrag: that.$echarts.util.curry(onPointDragging, dataIndex)
           };
         })
       });
 
-      this.chartsObj.hideLoading();
+      function onPointDragging(dataIndex) {
+        let tmpPos = that.chartsObj.convertFromPixel(
+          { seriesIndex: 0 },
+          this.position
+        );
+        nodes[dataIndex].x = tmpPos[0];
+        nodes[dataIndex].y = tmpPos[1];
+
+        // 重新渲染各个节点的值
+        that.chartsObj.setOption({
+          series: [
+            {
+              data: nodes
+            }
+          ]
+        });
+        // 当节点位置改变时，就要更新拖拽节点的位置
+        updatePosition();
+        drapNode(dataIndex);
+      }
+
+      function updatePosition(zoom) {
+        let _zoom = zoom || 1;
+        that.nodeSize=_zoom*that.nodeSize
+        that.chartsObj.setOption({
+          graphic: that.$echarts.util.map(nodes, function(item, dataIndex) {
+            let tmpPos = that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
+              item.x,
+              item.y
+            ]);
+            return {
+              position: tmpPos,
+              style: {
+                width: that.nodeSize,
+                height: that.nodeSize,
+                x: -that.nodeSize/2,
+                y: -that.nodeSize/2
+              }
+            };
+          })
+        });
+      }
+
+      // 判断节点拖拽的触发
+      function drapNode(dataIndex){
+        console.log('拖拽的第'+dataIndex+'个节点')
+        
+
+        
+      }
+
+      // 画布移动或者方法
+
+      that.chartsObj.on("graphRoam", function(data) {
+        updatePosition(data.zoom);
+      });
+
+      Toast.clear();
+      // this.chartsObj.hideLoading();
     },
 
     // 用canvas生成图片（边框：同辈同色，是否有纪念堂图标）
@@ -242,7 +270,7 @@ export default {
 
       // 头像
       let imgEle = document.createElement("img");
-      imgEle.setAttribute("crossOrigin",'Anonymous')
+      imgEle.setAttribute("crossOrigin", "Anonymous");
       imgEle.src = data.headerUrl;
 
       // 纪念堂图标
@@ -251,8 +279,8 @@ export default {
       jntIcon.height = 100;
 
       let iconSrc = require("../../../static/images/jnt_icon.png");
-      jntIcon.setAttribute("crossOrigin",'Anonymous')
-      jntIcon.src = iconSrc
+      jntIcon.setAttribute("crossOrigin", "Anonymous");
+      jntIcon.src = iconSrc;
 
       imgEle.onload = () => {
         ctx.drawImage(imgEle, 20, 20, 660, 660);
@@ -262,7 +290,7 @@ export default {
         ctx.arc(350, 350, 330, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
-        if (data.isDeath==2) {
+        if (data.isDeath == 2) {
           // imgCanvas.style.position = "fixed";
           // imgCanvas.style.top = "10px";
           // imgCanvas.style.left = "10px";

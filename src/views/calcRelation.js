@@ -15,6 +15,17 @@ export function calcRelation(data) {
     let _saveLinks_ = [];
 
 
+    // 判断该节点是不是中心节点
+    const isCenterNode = (data, id) => {
+        for (let idx in data) {
+            if (data[idx].id == id) {
+                return 1
+            }
+        }
+        return 0
+    }
+
+
     for (let idx in data) {
         let itemData = data[idx]
         if (itemData.id.indexOf('#root') > 0) {
@@ -36,11 +47,15 @@ export function calcRelation(data) {
 
             let itemLinkData = itemData.linkNodes
             let _itemLinkData = itemLinkData.map(item => {
+
                 let itemPotion = _offset_({
                     centerPoint: { x: centerItem.x, y: centerItem.y },
-                    dis: 100,
+                    dis: isCenterNode(data, item.id) ? 220 : 100,
                     type: item.nodeType
                 })
+
+
+
                 // 存储下 位置信息
                 recordPosition[item.id] = {
                     x: itemPotion.x,
@@ -68,10 +83,11 @@ export function calcRelation(data) {
             let nodeId = itemData.id
             let itemLinkData = itemData.linkNodes
             let _itemLinkData = itemLinkData.map(item => {
+                
                 if (!recordPosition.hasOwnProperty(item.id)) {
                     let itemPotion = _offset_({
                         centerPoint: { x: recordPosition[nodeId].x, y: recordPosition[nodeId].y },
-                        dis: 100,
+                        dis: isCenterNode(data, item.id) ? 220 : 100,
                         type: item.nodeType
                     })
                     // 存储下 位置信息
@@ -116,7 +132,7 @@ export function calcRelation(data) {
         let itemDataId = data[idx].id;
         let i = getIndex(_saveNodes_, itemDataId)
         let arr = []
-        
+
 
         let linkData = data[idx].linkNodes;
         for (let lIdx in linkData) {
