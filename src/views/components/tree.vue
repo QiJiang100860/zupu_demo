@@ -15,7 +15,7 @@ export default {
     return {
       chartsObj: null,
 
-      nodeSize:66
+      nodeSize: 66
     };
   },
 
@@ -43,7 +43,7 @@ export default {
                 name: itemData.name,
                 symbol: "circle",
                 // symbol: "image://" + url,
-
+                fixed: true,
                 label: {
                   show: true,
                   position: "bottom",
@@ -115,6 +115,7 @@ export default {
                     type: "graph",
                     layout: "none",
                     symbolSize: 66,
+                    draggable: false,
                     roam: true,
                     // draggable: true,
                     force: {
@@ -175,8 +176,10 @@ export default {
               image: dataItem._Image,
               width: that.nodeSize,
               height: that.nodeSize,
-              x: -that.nodeSize/2,
-              y: -that.nodeSize/2
+              // x: -that.nodeSize / 2,
+              // y: -that.nodeSize / 2
+              x: -33,
+              y: -33
             },
             position: that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
               dataItem.x,
@@ -194,20 +197,34 @@ export default {
             }, dataIndex),
 
             // 拖拽节点
-            ondrag: that.$echarts.util.curry(onPointDragging, dataIndex)
+            ondrag: that.$echarts.util.curry(onPointDragging, dataIndex),
+
+            // 拖拽结束
+            ondragend: that.$echarts.util.curry(onDrapEnd, dataIndex)
           };
         })
       });
 
+      // 画布移动或者方法
+
+      that.chartsObj.on("graphRoam", function(data) {
+        updatePosition({ zoom: data.zoom });
+      });
+
+      Toast.clear();
+      // this.chartsObj.hideLoading();
+
       function onPointDragging(dataIndex) {
+
+        // const _XYPOINT = [nodes[dataIndex].x,nodes[dataIndex].y]
+          // let tmpPos = _XYPOINT
         let tmpPos = that.chartsObj.convertFromPixel(
           { seriesIndex: 0 },
           this.position
         );
         nodes[dataIndex].x = tmpPos[0];
         nodes[dataIndex].y = tmpPos[1];
-
-        // 重新渲染各个节点的值
+        nodes[dataIndex].z = 1001;
         that.chartsObj.setOption({
           series: [
             {
@@ -216,13 +233,14 @@ export default {
           ]
         });
         // 当节点位置改变时，就要更新拖拽节点的位置
-        updatePosition();
-        drapNode(dataIndex);
+        updatePosition({ drapIdx: dataIndex, drapPoint: tmpPos });
       }
 
-      function updatePosition(zoom) {
-        let _zoom = zoom || 1;
-        that.nodeSize=_zoom*that.nodeSize
+      function updatePosition(option) {
+        // let _zoom = option.zoom || 1;
+        // that.nodeSize = _zoom * that.nodeSize;
+
+        // 根据位置比例计算每个节点的位置（echarts位置关系）
         that.chartsObj.setOption({
           graphic: that.$echarts.util.map(nodes, function(item, dataIndex) {
             let tmpPos = that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
@@ -234,30 +252,81 @@ export default {
               style: {
                 width: that.nodeSize,
                 height: that.nodeSize,
-                x: -that.nodeSize/2,
-                y: -that.nodeSize/2
+                // x: -that.nodeSize / 2,
+                // y: -that.nodeSize / 2
+                x: -33,
+                y: -33
               }
             };
           })
         });
       }
 
-      // 判断节点拖拽的触发
-      function drapNode(dataIndex){
-        console.log('拖拽的第'+dataIndex+'个节点')
-        
+      function onDrapEnd(idx) {
+        let drapPoint = that.chartsObj.convertFromPixel(
+          { seriesIndex: 0 },
+          this.position
+        );
 
-        
+
+        let drapPoint1 = that.chartsObj.convertToPixel(
+          { seriesIndex: 0 },
+          [0,0]
+        );
+
+
+
+        console.log("拖拽节点的坐标-------：" + drapPoint);
+
+        that.chartsObj.setOption({
+          graphic: that.$echarts.util.map(nodes, function(item, dataIndex) {
+            // 像素坐标
+            let testPoint = that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
+              item.x,
+              item.y
+            ]);
+
+            // 文档坐标
+            let _testPoint = that.chartsObj.convertFromPixel(
+              { seriesIndex: 0 },
+              testPoint
+            );
+
+
+            if (dataIndex != idx) {
+              handleImpact({
+                drapPoint: drapPoint,
+                testPoint: _testPoint,
+                drapIdx: idx,
+                testIdx: dataIndex,
+                success: () => {
+                  const param = {
+                    drapNode: nodes[idx],
+                    testNode: nodes[dataIndex]
+                  };
+                  that.$emit("emitDrapSheet", param);
+                }
+              });
+            }
+          })
+        });
       }
 
-      // 画布移动或者方法
+      // 检测碰撞
+      function handleImpact(opt) {
+        const _MPoint = opt.drapPoint;
+        const _TPoint = opt.testPoint;
 
-      that.chartsObj.on("graphRoam", function(data) {
-        updatePosition(data.zoom);
-      });
+        // 此处的偏移调整估计有点问题，需要后来去定位下问题，是什么产生的偏移，怀疑：绘制头像的时候的偏移量
+        const _x = Math.abs(_MPoint[0] - _TPoint[0]);
+        const _y = Math.abs(_MPoint[1] - _TPoint[1]);
+        const dis = Math.sqrt(_x * _x + _y * _y);
 
-      Toast.clear();
-      // this.chartsObj.hideLoading();
+
+        if (dis <= 66) {
+          opt.success();
+        }
+      }
     },
 
     // 用canvas生成图片（边框：同辈同色，是否有纪念堂图标）
