@@ -9,15 +9,17 @@
       :treeData="treeData"
       @emitHandleSheet="handleSheet"
       @emitDrapSheet="drapSheet"
+      @emitDrapELESheet="drapELESheet"
     ></tree>
 
-    <drap-node :data="drapNodeData" @emitDrap="drapFun"></drap-node>
+    <drap-node :data="drapNodeData" @emitDrap="drapEnd"></drap-node>
 
     <van-actionsheet
       v-model="show"
       :actions="actions"
       @select="onSelect"
       :close-on-click-overlay="false"
+      cancel-text="取消"
     />
   </div>
 </template>
@@ -31,6 +33,7 @@ import { Actionsheet } from "vant";
 import { Dialog } from "vant";
 
 import { calcRelation } from "./calcRelation.js";
+
 import relationData from "./data.js";
 
 export default {
@@ -60,7 +63,7 @@ export default {
     });
     this.getPrdigree(() => {
       const data = calcRelation(relationData.data);
-      this.drapNodeData = [1,2,3,3];
+      this.drapNodeData = relationData.drapData || [];
       this.treeData = {
         nodes: data.nodes,
         links: data.links
@@ -120,7 +123,6 @@ export default {
     },
 
     // 拖拽发生碰撞之后的sheet
-
     drapSheet(data) {
       const ids = data.drapNode._ID+"#-#"+data.testNode._ID
       this.actions = [
@@ -141,6 +143,25 @@ export default {
       this.show = true;
     },
 
+
+    drapELESheet(data){
+      this.actions = [
+        {
+          name: "合并信息",
+          // id: ids,
+          data:data,
+          handle: "combindInfro"
+        },
+        {
+          name: "建立关系",
+          // id: ids,
+          data:data,
+          handle: "buildLink"
+        }
+      ];
+      this.show = true;
+    },
+
     onSelect(item) {
       this.show = false;
       this.actions = null;
@@ -150,6 +171,7 @@ export default {
     del(item) {
       Dialog.confirm({
         title: "删除节点信息",
+        closeOnClickOverlay:true,
         message: "确定要删除这个节点信息吗？"
       })
         .then(() => {
@@ -173,19 +195,21 @@ export default {
       Dialog.confirm({
         title: "请选择联系人转化纪念堂方式",
         message:
-          "方式1：逝者短信验证死亡后，手动创建纪念堂；<div></div>方式2：逝者两位共同好友确认其死亡，并创建纪念堂。",
-        confirmButtonText: "共同好友确认死亡",
+          "方式1：逝者短信验证死亡后，手动创建纪念堂；<div></div>方式2：直接转为纪念堂，系统将为共同好友推送去世通知",
         cancelButtonText: "逝者短信验证死亡",
-        overlay: true
+        confirmButtonText: "直接转为纪念堂",
+        overlay: true,
+        closeOnClickOverlay:true,
       })
         .then(() => {
-          // Toast("共同好友确认死亡");
-          window.location.href = `memorialHall://?handleName=commonFriend&nodeId=${
-            item.id
-          }`;
+          // Toast("方式一");
+          // window.location.href = `memorialHall://?handleName=commonFriend&nodeId=${
+          //   item.id
+          // }`;
+          Toast("直接转为纪念堂"+JSON.stringify(item));
         })
         .catch(() => {
-          // Toast("逝者短信验证死亡");
+          // Toast("方式二");
           window.location.href = `memorialHall://?handleName=sendMessage&nodeId=${
             item.id
           }`;
@@ -203,7 +227,8 @@ export default {
 
       Dialog.confirm({
         title: "删除节点关系",
-        message: tipStr
+        message: tipStr,
+        closeOnClickOverlay:true,
       })
         .then(() => {
           // on confirm
@@ -228,7 +253,8 @@ export default {
 
       Dialog.confirm({
         title: "合并节点信息",
-        message: tipStr
+        message: tipStr,
+        closeOnClickOverlay:true,
       })
         .then(() => {
           // on confirm
@@ -241,7 +267,14 @@ export default {
           // window.location.reload()
         });
 
+    },
+    
+    combindInfro(item){
+      Toast("合并信息？替换信息"+item.data.drapNode.id);
+    },
 
+    buildLink(item){
+      Toast("建立关系"+item.data.drapNode.id);
     },
     // handleContect() {
     //   if (this.telType == 1) {
@@ -264,8 +297,8 @@ export default {
       cb ? cb() : "";
     },
     // 拖拽添加关系
-    drapFun(id) {
-      this.$refs.treeComponent.responseDrapFun();
+    drapEnd(data) {
+      this.$refs.treeComponent.responseDrapFun(data);
     }
   }
 };

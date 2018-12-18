@@ -141,11 +141,11 @@ module.exports = {
             headerUrl: require("../../static/images/nver.png"),
             hierarchy: '0',
             type: 1,
-            linkNodes:[
+            linkNodes: [
                 {
-                    id:'61',
-                    name:'妻子的爸爸',
-                    appellation:'岳父',
+                    id: '61',
+                    name: '妻子的爸爸',
+                    appellation: '岳父',
                     status: 1,
                     nodeType: 'f',
                     headerUrl: require("../../static/images/fuqin.png"),
@@ -153,9 +153,9 @@ module.exports = {
                     type: 2,
                 },
                 {
-                    id:'62',
-                    name:'妻子的妈妈',
-                    appellation:'岳母',
+                    id: '62',
+                    name: '妻子的妈妈',
+                    appellation: '岳母',
                     status: 1,
                     nodeType: 'm',
                     headerUrl: require("../../static/images/muqin.png"),
@@ -195,7 +195,7 @@ module.exports = {
             headerUrl: require("../../static/images/nver.png"),
             hierarchy: '-1',
             type: 1,
-            linkNodes:[
+            linkNodes: [
                 {
                     id: '51',
                     name: "欧阳娜娜",
@@ -229,7 +229,7 @@ module.exports = {
             headerUrl: require("../../static/images/fuqin.png"),
             hierarchy: '+1',
             type: 1,
-            linkNodes:[
+            linkNodes: [
                 {
                     id: '21',
                     name: "张宝顺",
@@ -253,5 +253,30 @@ module.exports = {
             ]
         },
 
+    ],
+
+    // 已经选的拖拽的节点信息
+    drapData: [
+        {
+            id: '121801',
+            name: "张宝顺",
+            appellation: "爷爷",
+            status: 1,
+            headerUrl: require("../../static/images/nver.png"),
+        },
+        {
+            id: '121802',
+            name: "张来喜",
+            appellation: "哥哥",
+            status: 1,
+            headerUrl: require("../../static/images/ziji.png"),
+        },
+        {
+            id: '121803',
+            name: "张来喜",
+            appellation: "哥哥",
+            status: 1,
+            headerUrl: require("../../static/images/fuqin.png"),
+        }
     ]
 }
