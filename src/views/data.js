@@ -76,6 +76,7 @@ module.exports = {
             appellation: "我",
             status: 1,
             headerUrl: require("../../static/images/ziji.png"),
+            // headerUrl:"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2382548201,1620907963&fm=27&gp=0.jpg",
             hierarchy: '0',
             type: 1,
             linkNodes: [
@@ -87,7 +88,7 @@ module.exports = {
                     nodeType: 'f',
                     headerUrl: require("../../static/images/fuqin.png"),
                     hierarchy: '+1',
-                    type: 1,
+                    type: 2,
                 },
                 {
                     id: '3',
@@ -128,7 +129,7 @@ module.exports = {
                     nodeType: 'w',
                     headerUrl: require("../../static/images/nver.png"),
                     hierarchy: '0',
-                    type: 1,
+                    type: 2,
                 }
             ]
         },
@@ -140,7 +141,7 @@ module.exports = {
             status: 1,
             headerUrl: require("../../static/images/nver.png"),
             hierarchy: '0',
-            type: 1,
+            type: 2,
             linkNodes: [
                 {
                     id: '61',
@@ -150,7 +151,7 @@ module.exports = {
                     nodeType: 'f',
                     headerUrl: require("../../static/images/fuqin.png"),
                     hierarchy: '+1',
-                    type: 2,
+                    type: 1,
                 },
                 {
                     id: '62',
@@ -160,7 +161,7 @@ module.exports = {
                     nodeType: 'm',
                     headerUrl: require("../../static/images/muqin.png"),
                     hierarchy: '+1',
-                    type: 1,
+                    type: 2,
                 },
                 {
                     id: '1515236156156#root',
@@ -259,24 +260,21 @@ module.exports = {
     drapData: [
         {
             id: '121801',
-            name: "张宝顺",
-            appellation: "爷爷",
+            name: "aQ晨",
             status: 1,
             headerUrl: require("../../static/images/nver.png"),
         },
         {
             id: '121802',
-            name: "张来喜",
-            appellation: "哥哥",
+            name: "aQ辰",
             status: 1,
-            headerUrl: require("../../static/images/ziji.png"),
+            headerUrl: require("../../static/images/erzi.png"),
         },
         {
             id: '121803',
-            name: "张来喜",
-            appellation: "哥哥",
+            name: "aQ飞",
             status: 1,
-            headerUrl: require("../../static/images/fuqin.png"),
+            headerUrl: require("../../static/images/ziji.png"),
         }
     ]
 }

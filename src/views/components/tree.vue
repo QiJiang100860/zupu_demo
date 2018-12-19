@@ -34,16 +34,17 @@ export default {
         const loopData = i => {
           if (i < data.length) {
             const itemData = data[i];
-            this.canvasDrawIcon(itemData, url => {
+            this.canvasDrawIcon(itemData, (url, dataUrl) => {
               let item = {
                 _ID: itemData.id,
                 _IsDeath: itemData.isDeath,
-                _Image: url,
+                _Image: dataUrl,
+                headerUrl: url,
                 x: itemData.x,
                 y: itemData.y,
                 name: itemData.name,
                 symbol: "circle",
-                // symbol: "image://" + url,
+                // symbol: "image://" + dataUrl,
                 fixed: true,
                 label: {
                   show: true,
@@ -303,7 +304,7 @@ export default {
             this.handleImpact({
               drapPoint: drapPoint,
               testPoint: _testPoint,
-              drapType:opt.drapType,
+              drapType: opt.drapType,
               drapIdx: opt.idx,
               testIdx: dataIndex,
               success: () => {
@@ -319,13 +320,13 @@ export default {
           this.handleImpact({
             drapPoint: drapPoint,
             testPoint: _testPoint,
-            drapType:opt.drapType,
+            drapType: opt.drapType,
             success: () => {
               const param = {
                 drapNode: opt.data,
                 testNode: item
               };
-              
+
               this.$emit("emitDrapELESheet", param);
             }
           });
@@ -343,7 +344,7 @@ export default {
       const _y = Math.abs(_MPoint[1] - _TPoint[1]);
       const dis = Math.sqrt(_x * _x + _y * _y);
 
-      const isEvelDis = opt.drapType==1?66:53
+      const isEvelDis = opt.drapType == 1 ? 66 : 66;
       if (dis <= isEvelDis) {
         opt.success();
       }
@@ -372,7 +373,16 @@ export default {
       jntIcon.src = iconSrc;
 
       imgEle.onload = () => {
-        ctx.drawImage(imgEle, 20, 20, 660, 660);
+        if (data.isDeath == 2) {
+          ctx.drawImage(imgEle, 20, 20, 660, 660);
+          let myImageData = ctx.getImageData(20, 20, 660, 660);
+          this.colorToGray(myImageData,grayImgData=>{
+            ctx.putImageData(grayImgData, 20, 20);
+          })
+        } else {
+          ctx.drawImage(imgEle, 20, 20, 660, 660);
+        }
+
         ctx.beginPath();
         ctx.lineWidth = 20;
         ctx.strokeStyle = data.seniorityColor;
@@ -392,17 +402,32 @@ export default {
           ctx.stroke();
           ctx.closePath();
           ctx.drawImage(jntIcon, 472, 460, 180, 180);
-          const drawImgUrl = imgCanvas.toDataURL();
+          const dataUrl = imgCanvas.toDataURL();
           ctx.clearRect(0, 0, imgCanvas.width, imgCanvas.height);
-          cb(drawImgUrl);
+          cb(data.headerUrl, dataUrl);
         } else {
-          const drawImgUrl = imgCanvas.toDataURL();
+          const dataUrl = imgCanvas.toDataURL();
           ctx.clearRect(0, 0, imgCanvas.width, imgCanvas.height);
-          cb(drawImgUrl);
+          cb(data.headerUrl, dataUrl);
         }
       };
     },
 
+    //  把彩色图片转化成黑白图片
+    colorToGray(imgData, cb) {
+      let _data = imgData;
+      for (let i = 0; i < 660 * 660 * 4; i += 4) {
+        let myRed = _data.data[i];
+        let myGreen = _data.data[i + 1];
+        let myBlue = _data.data[i + 2];
+        let myGray = parseInt((myRed + myGreen + myBlue) / 3);
+
+        _data.data[i] = myGray;
+        _data.data[i + 1] = myGray;
+        _data.data[i + 2] = myGray;
+      }
+      cb(_data);
+    },
     // 响应拖拽事件，charts样式修改
     responseDrapFun(data) {
       let param = {

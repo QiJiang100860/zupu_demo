@@ -21,6 +21,9 @@
       :close-on-click-overlay="false"
       cancel-text="取消"
     />
+
+    <build-links ref="buildLinks" @emitBuildLink="handleBuildLink"></build-links>
+
   </div>
 </template>
 
@@ -28,6 +31,7 @@
 <script>
 import Tree from "./components/tree";
 import DrapNode from "./components/drapNode";
+import BuildLinks from "./components/buildLinks";
 import { Toast } from "vant";
 import { Actionsheet } from "vant";
 import { Dialog } from "vant";
@@ -41,7 +45,9 @@ export default {
     Tree,
     DrapNode,
     Actionsheet,
-    Dialog
+    Dialog,
+
+    BuildLinks
   },
   data() {
     return {
@@ -147,14 +153,12 @@ export default {
     drapELESheet(data){
       this.actions = [
         {
-          name: "合并信息",
-          // id: ids,
+          name: "替换节点信息",
           data:data,
           handle: "combindInfro"
         },
         {
           name: "建立关系",
-          // id: ids,
           data:data,
           handle: "buildLink"
         }
@@ -269,13 +273,46 @@ export default {
 
     },
     
+    // 拖拽节点后合并---(替换信息??)
     combindInfro(item){
-      Toast("合并信息？替换信息"+item.data.drapNode.id);
+      const paramIds = {
+        drapId :item.data.drapNode.id,
+        testId:item.data.testNode._ID
+      }
+      
+      const tipStr = `确定把【${item.data.testNode.name}】的信息替换为【${item.data.drapNode.name}】的信息吗？` 
+
+      Dialog.confirm({
+        title: "替换节点信息",
+        message: tipStr,
+        closeOnClickOverlay:true,
+      })
+        .then(() => {
+          // on confirm
+          Toast("替换成功了"+JSON.stringify(paramIds));
+          // window.location.reload()
+        })
+        .catch(() => {
+          // on cancel
+          Toast("操作取消了");
+          // window.location.reload()
+        });
     },
 
+    // 拖拽节点后建立关系
     buildLink(item){
-      Toast("建立关系"+item.data.drapNode.id);
+      // Toast("建立关系"+item.data.drapNode.id);
+      this.$refs.buildLinks.showModel(item)
     },
+
+    // 选择完了添加人员信息结束之后
+    handleBuildLink(data){
+      this.$refs.buildLinks.hideModel()
+      Toast('添加成功'+JSON.stringify(data))
+    },
+
+
+
     // handleContect() {
     //   if (this.telType == 1) {
     //     alert("安卓：去联系人方法");

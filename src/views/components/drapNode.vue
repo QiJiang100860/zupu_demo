@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul class="drap-wrapper" v-if="data.length">
+    <ul class="drap-wrapper">
       <li class="drap-item" v-if="chooseItem" @click="openModel">
         <h5>
           <span>收起</span>
@@ -14,25 +14,25 @@
       </li>
 
       <div class="drap-node-content" v-if="chooseItem">
-        <div
-          v-for="(item,idx) in data"
-          :key="idx"
-          :data-nodeid="item.id"
-          class="drap-node"
-          v-drap="{cb:drapFun,itemData:item}"
-          :style="{'background-image':'url('+item.headerUrl+')'}"
-        >
-          <!-- <span>{{item.name}}</span> -->
+        <div>
+          <div
+            class="drap-node"
+            v-drap="{cb:drapFun,itemData:emptyNode}"
+            :style="{'background-image':'url('+emptyNode.headerUrl+')'}"
+          ></div>
+          <h4>{{emptyNode.name}}</h4>
+        </div>
+
+        <div v-for="(item,idx) in data" :key="idx">
+          <div
+            :data-nodeid="item.id"
+            class="drap-node"
+            v-drap="{cb:drapFun,itemData:item}"
+            :style="{'background-image':'url('+item.headerUrl+')'}"
+          ></div>
+          <h4>{{item.name}}</h4>
         </div>
       </div>
-    </ul>
-
-    <ul class="null-drap-wrapper" v-else>
-      <li class="drap-item" :data-nodeid="null" v-drap="{cb:drapFun,id:null}">
-        <h5>
-          <span>空</span>
-        </h5>
-      </li>
     </ul>
   </div>
 </template>
@@ -46,7 +46,14 @@ export default {
   },
   data() {
     return {
-      chooseItem: null
+      chooseItem: null,
+      emptyNode: {
+        id: "empty_node",
+        name: "空节点",
+        appellation: "未知",
+        status: 1,
+        headerUrl: require("../../../static/images/empty_node.png")
+      }
     };
   },
   beforeMount() {
@@ -131,7 +138,7 @@ export default {
     background: #ddedee;
     bottom: 25px;
     z-index: 10000;
-    padding-bottom: 24px;
+    padding-bottom: 28px;
     border-radius: 25px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -144,14 +151,18 @@ export default {
       background-position: center center;
       background-repeat: no-repeat;
       margin: 5px auto;
+      margin-bottom: 0;
       text-align: center;
       box-shadow: 0px 0px 8px rgba(#000, 0.6);
-      span {
-        font-size: 12px;
-        color: #fff;
-        text-shadow: 1px 1px 1px rgba(#000, 0.5);
-      }
+      
     }
+
+    h4 {
+        font-size: 12px;
+        color: #333;
+        text-shadow: 1px 1px 1px rgba(#000, 0.2);
+        text-align: center;
+      }
   }
 }
 </style>
