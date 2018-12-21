@@ -4,26 +4,28 @@
       <!-- <div class="h5-btn" @click="handleContect">联系人</div> -->
       <!-- <div class="h5-btn" @click="handleJNTFun">纪念堂</div> -->
     </div>
-    <tree
-      ref="treeComponent"
-      :treeData="treeData"
-      @emitHandleSheet="handleSheet"
-      @emitDrapSheet="drapSheet"
-      @emitDrapELESheet="drapELESheet"
-    ></tree>
 
-    <drap-node :data="drapNodeData" @emitDrap="drapEnd"></drap-node>
+    <template v-if="loading">
+      <tree
+        ref="treeComponent"
+        :treeData="treeData"
+        @emitHandleSheet="handleSheet"
+        @emitDrapSheet="drapSheet"
+        @emitDrapELESheet="drapELESheet"
+      ></tree>
 
-    <van-actionsheet
-      v-model="show"
-      :actions="actions"
-      @select="onSelect"
-      :close-on-click-overlay="false"
-      cancel-text="取消"
-    />
+      <drap-node :data="drapNodeData" @emitDrap="drapEnd"></drap-node>
 
-    <build-links ref="buildLinks" @emitBuildLink="handleBuildLink"></build-links>
+      <van-actionsheet
+        v-model="show"
+        :actions="actions"
+        @select="onSelect"
+        :close-on-click-overlay="false"
+        cancel-text="取消"
+      />
 
+      <build-links ref="buildLinks" @emitBuildLink="handleBuildLink"></build-links>
+    </template>
   </div>
 </template>
 
@@ -35,10 +37,12 @@ import BuildLinks from "./components/buildLinks";
 import { Toast } from "vant";
 import { Actionsheet } from "vant";
 import { Dialog } from "vant";
-
 import { calcRelation } from "./calcRelation.js";
 
 import relationData from "./data.js";
+
+import * as home from "../api/home.js";
+import { setTimeout } from "timers";
 
 export default {
   components: {
@@ -57,7 +61,9 @@ export default {
       drapNodeData: [],
 
       show: false,
-      actions: null
+      actions: null,
+
+      loading: false
     };
   },
   beforeMount() {
@@ -67,6 +73,8 @@ export default {
       loadingType: "spinner",
       duration: 0
     });
+
+
     this.getPrdigree(() => {
       const data = calcRelation(relationData.data);
       this.drapNodeData = relationData.drapData || [];
@@ -130,18 +138,18 @@ export default {
 
     // 拖拽发生碰撞之后的sheet
     drapSheet(data) {
-      const ids = data.drapNode._ID+"#-#"+data.testNode._ID
+      const ids = data.drapNode._ID + "#-#" + data.testNode._ID;
       this.actions = [
         {
           name: "删除关系",
           id: ids,
-          data:data,
+          data: data,
           handle: "delLink"
         },
         {
           name: "合并信息",
           id: ids,
-          data:data,
+          data: data,
           handle: "mergeInfro"
         }
       ];
@@ -149,17 +157,16 @@ export default {
       this.show = true;
     },
 
-
-    drapELESheet(data){
+    drapELESheet(data) {
       this.actions = [
         {
           name: "替换节点信息",
-          data:data,
+          data: data,
           handle: "combindInfro"
         },
         {
           name: "建立关系",
-          data:data,
+          data: data,
           handle: "buildLink"
         }
       ];
@@ -175,7 +182,7 @@ export default {
     del(item) {
       Dialog.confirm({
         title: "删除节点信息",
-        closeOnClickOverlay:true,
+        closeOnClickOverlay: true,
         message: "确定要删除这个节点信息吗？"
       })
         .then(() => {
@@ -203,14 +210,14 @@ export default {
         cancelButtonText: "逝者短信验证死亡",
         confirmButtonText: "直接转为纪念堂",
         overlay: true,
-        closeOnClickOverlay:true,
+        closeOnClickOverlay: true
       })
         .then(() => {
           // Toast("方式一");
           // window.location.href = `memorialHall://?handleName=commonFriend&nodeId=${
           //   item.id
           // }`;
-          Toast("直接转为纪念堂"+JSON.stringify(item));
+          Toast("直接转为纪念堂" + JSON.stringify(item));
         })
         .catch(() => {
           // Toast("方式二");
@@ -220,23 +227,24 @@ export default {
         });
     },
 
-    delLink(item){
+    delLink(item) {
       const paramIds = {
-        drapId :item.data.drapNode._ID,
-        testId:item.data.testNode._ID
-      }
+        drapId: item.data.drapNode._ID,
+        testId: item.data.testNode._ID
+      };
 
-      const tipStr = `确定要删除【${item.data.drapNode.name}】和【${item.data.testNode.name}】的关系吗？` 
-
+      const tipStr = `确定要删除【${item.data.drapNode.name}】和【${
+        item.data.testNode.name
+      }】的关系吗？`;
 
       Dialog.confirm({
         title: "删除节点关系",
         message: tipStr,
-        closeOnClickOverlay:true,
+        closeOnClickOverlay: true
       })
         .then(() => {
           // on confirm
-          Toast("删除成功了"+JSON.stringify(paramIds));
+          Toast("删除成功了" + JSON.stringify(paramIds));
           // window.location.reload()
         })
         .catch(() => {
@@ -247,22 +255,24 @@ export default {
     },
 
     // 合并信息
-    mergeInfro(item){
+    mergeInfro(item) {
       const paramIds = {
-        drapId :item.data.drapNode._ID,
-        testId:item.data.testNode._ID
-      }
+        drapId: item.data.drapNode._ID,
+        testId: item.data.testNode._ID
+      };
 
-      const tipStr = `确定把【${item.data.drapNode.name}】的信息合并入【${item.data.testNode.name}】的信息中吗？` 
+      const tipStr = `确定把【${item.data.drapNode.name}】的信息合并入【${
+        item.data.testNode.name
+      }】的信息中吗？`;
 
       Dialog.confirm({
         title: "合并节点信息",
         message: tipStr,
-        closeOnClickOverlay:true,
+        closeOnClickOverlay: true
       })
         .then(() => {
           // on confirm
-          Toast("合并成功了"+JSON.stringify(paramIds));
+          Toast("合并成功了" + JSON.stringify(paramIds));
           // window.location.reload()
         })
         .catch(() => {
@@ -270,26 +280,27 @@ export default {
           Toast("操作取消了");
           // window.location.reload()
         });
-
     },
-    
+
     // 拖拽节点后合并---(替换信息??)
-    combindInfro(item){
+    combindInfro(item) {
       const paramIds = {
-        drapId :item.data.drapNode.id,
-        testId:item.data.testNode._ID
-      }
-      
-      const tipStr = `确定把【${item.data.testNode.name}】的信息替换为【${item.data.drapNode.name}】的信息吗？` 
+        drapId: item.data.drapNode.id,
+        testId: item.data.testNode._ID
+      };
+
+      const tipStr = `确定把【${item.data.testNode.name}】的信息替换为【${
+        item.data.drapNode.name
+      }】的信息吗？`;
 
       Dialog.confirm({
         title: "替换节点信息",
         message: tipStr,
-        closeOnClickOverlay:true,
+        closeOnClickOverlay: true
       })
         .then(() => {
           // on confirm
-          Toast("替换成功了"+JSON.stringify(paramIds));
+          Toast("替换成功了" + JSON.stringify(paramIds));
           // window.location.reload()
         })
         .catch(() => {
@@ -300,18 +311,16 @@ export default {
     },
 
     // 拖拽节点后建立关系
-    buildLink(item){
+    buildLink(item) {
       // Toast("建立关系"+item.data.drapNode.id);
-      this.$refs.buildLinks.showModel(item)
+      this.$refs.buildLinks.showModel(item);
     },
 
     // 选择完了添加人员信息结束之后
-    handleBuildLink(data){
-      this.$refs.buildLinks.hideModel()
-      Toast('添加成功'+JSON.stringify(data))
+    handleBuildLink(data) {
+      this.$refs.buildLinks.hideModel();
+      Toast("添加成功" + JSON.stringify(data));
     },
-
-
 
     // handleContect() {
     //   if (this.telType == 1) {
@@ -331,7 +340,11 @@ export default {
 
     // 获取纪念堂的列表的数据
     getPrdigree(cb) {
-      cb ? cb() : "";
+      home.getAdverts().then(res => {
+        this.loading = true;
+        
+        cb ? cb() : "";
+      });
     },
     // 拖拽添加关系
     drapEnd(data) {
