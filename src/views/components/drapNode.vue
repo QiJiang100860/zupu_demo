@@ -52,7 +52,7 @@ export default {
         name: "空节点",
         appellation: "未知",
         status: 1,
-        headerUrl: require("../../../static/images/empty_node.png")
+        headerUrl: require("../../../static/images/node_null.png")
       }
     };
   },

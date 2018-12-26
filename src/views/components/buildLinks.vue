@@ -8,31 +8,31 @@
     </div>
 
     <div class="node f-node" @click="handleBuildLink('f')">
-      <img :src="require('../../../static/images/empty_node.png')" alt>
+      <img :src="require('../../../static/images/node_f.png')" alt>
       <div class="infro">父亲</div>
     </div>
 
     <div class="node m-node" @click="handleBuildLink('m')">
-      <img :src="require('../../../static/images/empty_node.png')" alt>
+      <img :src="require('../../../static/images/node_m.png')" alt>
       <div class="infro">母亲</div>
     </div>
 
 
     <div class="node po-node" @click="handleBuildLink('po')">
-      <img :src="require('../../../static/images/empty_node.png')" alt>
+      <img :src="require('../../../static/images/node_po.png')" alt>
       <div class="infro">配偶</div>
     </div>
 
 
     <div class="node s-node" @click="handleBuildLink('s')">
-      <img :src="require('../../../static/images/empty_node.png')" alt>
+      <img :src="require('../../../static/images/node_s.png')" alt>
       <div class="infro">儿子</div>
     </div>
 
 
 
     <div class="node d-node" @click="handleBuildLink('d')">
-      <img :src="require('../../../static/images/empty_node.png')" alt>
+      <img :src="require('../../../static/images/node_d.png')" alt>
       <div class="infro">女儿</div>
     </div>
 
