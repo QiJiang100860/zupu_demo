@@ -73,6 +73,6 @@ module.exports = {
         }
 
     },
-    // 节点连接线的长度
-    lineLong: 100,
+    // 节点缩放的时候的缩放比例
+    scaleNum: 0.6,
 }

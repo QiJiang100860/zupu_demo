@@ -74,7 +74,6 @@ export default {
       duration: 0
     });
 
-
     this.getPrdigree(() => {
       const data = calcRelation(relationData.data);
       this.drapNodeData = relationData.drapData || [];
@@ -340,11 +339,18 @@ export default {
 
     // 获取纪念堂的列表的数据
     getPrdigree(cb) {
-      home.getAdverts().then(res => {
+
+
+      setTimeout(() => {
         this.loading = true;
-        
         cb ? cb() : "";
-      });
+      },3000);
+
+
+      // home.getAdverts().then(res => {
+      //   this.loading = true;
+      //   cb ? cb() : "";
+      // });
     },
     // 拖拽添加关系
     drapEnd(data) {

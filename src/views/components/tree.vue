@@ -8,6 +8,9 @@
 import * as Util from "../../utils";
 import { debug } from "util";
 import { Toast } from "vant";
+
+import * as config from "../config.js";
+
 export default {
   props: ["treeData"],
   components: {},
@@ -119,10 +122,7 @@ export default {
                     symbolSize: 66,
                     draggable: false,
                     roam: true,
-                    // draggable: true,
-                    force: {
-                      // repulsion: 1000
-                    },
+                    nodeScaleRatio: config.scaleNum,
                     data: nodeData,
                     // links: [],
                     links: linkData,
@@ -153,8 +153,16 @@ export default {
       const wrapper = document.getElementById("treeWrapper");
       const infro = wrapper.getBoundingClientRect();
       const dom = document.getElementById("echarts");
+
       dom.style.width = infro.width + "px";
       dom.style.height = infro.height + "px";
+
+      // 画布位置大小预设定
+      // dom.style.width = infro.width*2 + "px";
+      // dom.style.height = infro.height*2 + "px";
+      // dom.style.marginTop= 0-infro.height/2+"px";
+      // dom.style.marginLeft = 0-infro.width/2+"px"
+
       this.chartsObj = this.$echarts.init(dom);
       cb ? cb() : "";
     },
@@ -169,24 +177,28 @@ export default {
           that.drapNodeData,
           (dataItem, dataIndex) => {
             return {
+              // 图形引入
               // type: "circle",
               // shape: {
               //   r: 33
               // },
               // style: {
-              //   fill: "#fff",
+              //   fill: "rgba(255,255,255,.5)",
               //   stroke: "#dedede"
               // },
+
+              // 图片的引入
               type: "image",
               style: {
                 image: dataItem._Image,
                 width: that.nodeSize,
                 height: that.nodeSize,
-                // x: -that.nodeSize / 2,
-                // y: -that.nodeSize / 2
-                x: -33,
-                y: -33
+                x: -that.nodeSize / 2,
+                y: -that.nodeSize / 2
+                // x: -33,
+                // y: -33
               },
+
               position: that.chartsObj.convertToPixel({ seriesIndex: 0 }, [
                 dataItem.x,
                 dataItem.y
@@ -243,9 +255,11 @@ export default {
       }
 
       function updatePosition(option) {
-        // let _zoom = option.zoom || 1;
-        // that.nodeSize = _zoom * that.nodeSize;
-
+        let _zoom = option.zoom || 1;
+        // 根据echarts设置的缩放比例计算缩放后的节点大小
+        let Dscal = _zoom - 1;
+        let Ds = 1 + Dscal * config.scaleNum;
+        that.nodeSize *= Ds;
         // 根据位置比例计算每个节点的位置（echarts位置关系）
         that.chartsObj.setOption({
           graphic: that.$echarts.util.map(that.drapNodeData, function(
@@ -258,13 +272,14 @@ export default {
             ]);
             return {
               position: tmpPos,
+
               style: {
                 width: that.nodeSize,
                 height: that.nodeSize,
-                // x: -that.nodeSize / 2,
-                // y: -that.nodeSize / 2
-                x: -33,
-                y: -33
+                x: -that.nodeSize / 2,
+                y: -that.nodeSize / 2
+                // x: -33,
+                // y: -33
               }
             };
           })
@@ -344,7 +359,9 @@ export default {
       const _y = Math.abs(_MPoint[1] - _TPoint[1]);
       const dis = Math.sqrt(_x * _x + _y * _y);
 
-      const isEvelDis = opt.drapType == 1 ? 66 : 66;
+      const isEvelDis =
+        opt.drapType == 1 ? this.nodeSize : this.nodeSize / 2 + 66 / 2;
+      console.log("检测碰撞的球之间的距离" + isEvelDis);
       if (dis <= isEvelDis) {
         opt.success();
       }
@@ -376,9 +393,9 @@ export default {
         if (data.isDeath == 2) {
           ctx.drawImage(imgEle, 20, 20, 660, 660);
           let myImageData = ctx.getImageData(20, 20, 660, 660);
-          this.colorToGray(myImageData,grayImgData=>{
+          this.colorToGray(myImageData, grayImgData => {
             ctx.putImageData(grayImgData, 20, 20);
-          })
+          });
         } else {
           ctx.drawImage(imgEle, 20, 20, 660, 660);
         }
@@ -450,6 +467,7 @@ export default {
   width: 100%;
   height: 100%;
   //   background: #dedede;
+  overflow: hidden;
 }
 </style>
 
