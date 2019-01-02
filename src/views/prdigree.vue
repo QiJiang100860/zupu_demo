@@ -231,7 +231,6 @@ export default {
         drapId: item.data.drapNode._ID,
         testId: item.data.testNode._ID
       };
-
       const tipStr = `确定要删除【${item.data.drapNode.name}】和【${
         item.data.testNode.name
       }】的关系吗？`;

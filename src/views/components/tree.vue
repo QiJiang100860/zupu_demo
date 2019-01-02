@@ -42,6 +42,7 @@ export default {
                 _ID: itemData.id,
                 _IsDeath: itemData.isDeath,
                 _Image: dataUrl,
+                _Status:itemData.status,
                 headerUrl: url,
                 x: itemData.x,
                 y: itemData.y,
@@ -58,10 +59,16 @@ export default {
                   color: "#333",
                   align: "center",
                   formatter: () => {
-                    return [
-                      `{a|${itemData.appellation}}`,
-                      `{b|${itemData.name}}`
-                    ].join("\n");
+                    if (itemData.status == 0) {
+                      // 正常节点
+                      return [
+                        `{a|${itemData.appellation}}`,
+                        `{b|${itemData.name}}`
+                      ].join("\n");
+                    }else if(itemData.status==1){
+                      // 空节点
+                      return `{a|${itemData.appellation}}`
+                    }
                   },
                   rich: {
                     a: {
@@ -378,8 +385,11 @@ export default {
       // 头像
       let imgEle = document.createElement("img");
       imgEle.setAttribute("crossOrigin", "Anonymous");
-      imgEle.src = data.headerUrl;
 
+      imgEle.src =
+        data.status == 0 && data.headerUrl
+          ? data.headerUrl
+          : require("../../../static/images/node_null.png");
       // 纪念堂图标
       let jntIcon = document.createElement("img");
       jntIcon.width = 100;
