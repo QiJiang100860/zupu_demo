@@ -50,7 +50,7 @@ export function calcRelation(data) {
 
                 let itemPotion = _offset_({
                     centerPoint: { x: centerItem.x, y: centerItem.y },
-                    dis: isCenterNode(data, item.id) ? 220 : 100,
+                    dis: isCenterNode(data, item.id) ? 220 : 100, //如果是中心节点（有子节点间距大点，保证节点位置计算完成之后节点不重复）
                     type: item.nodeType
                 })
 
